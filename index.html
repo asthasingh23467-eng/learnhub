@@ -1,0 +1,2194 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnHub - LMS</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+*{box-sizing:border-box}
+
+body{
+  font-family:'Poppins',Arial;
+  margin:0;
+  background:#081b29;
+  color:white;
+}
+
+nav{
+  background:#081b29;
+  padding:18px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #112e42;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+nav b{color:#00abf0;font-size:22px}
+.app-layout{display:flex;min-height:calc(100vh - 65px)}
+
+.sidebar{
+  width:230px;
+  flex-shrink:0;
+  background:#081b29;
+  border-right:1px solid #112e42;
+  padding:18px 12px;
+  position:sticky;
+  top:65px;
+  height:calc(100vh - 65px);
+  overflow-y:auto;
+}
+
+.sidebar-title{
+  font-size:12px;
+  color:#00abf0;
+  font-weight:700;
+  margin:20px 12px 8px;
+}
+
+.side-btn{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin:5px 0;
+  background:transparent;
+  color:white;
+  border:1px solid transparent;
+  border-radius:8px;
+  text-align:left;
+  font-family:inherit;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow:none;
+}
+
+.side-btn:hover,.side-btn.active{
+  background:#112e42;
+  border-color:#0f3a57;
+  color:#00abf0;
+}
+
+.main-content{flex:1;min-width:0;padding:20px}
+.container{max-width:1000px;margin:auto}
+
+.card{
+  background:#112e42;
+  padding:22px;
+  border-radius:12px;
+  margin:15px 0;
+  border:1px solid #0f3a57;
+  box-shadow:0 0 15px rgba(0,171,240,0.15);
+}
+
+h3{color:#00abf0;margin-top:0}
+
+.list-box{
+  background:#081b29;
+  border:1px solid #00abf0;
+  border-radius:8px;
+  padding:12px;
+  margin:8px 0;
+}
+
+.q-box{
+  background:#0a2538;
+  border-left:4px solid #00abf0;
+  padding:10px;
+  margin:6px 0;
+  border-radius:6px;
+  font-size:13.5px;
+  line-height:1.5;
+}
+
+.note-box{
+  background:#081b29;
+  border:1px dashed #00abf0;
+  padding:14px;
+  border-radius:8px;
+  margin:10px 0;
+  font-size:13.5px;
+  line-height:1.8;
+}
+
+.note-box h4{color:#00abf0;margin:5px 0}
+.note-box pre{
+  background:#0a2538;
+  padding:12px;
+  border-radius:6px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  color:#eaf7ff;
+}
+
+input,select{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  background:#081b29;
+  border:1.5px solid #00abf0;
+  border-radius:8px;
+  color:white;
+}
+
+button{
+  background:#00abf0;
+  color:#081b29;
+  padding:11px 22px;
+  border-radius:25px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 0 10px #00abf0;
+  border:0;
+}
+
+.hidden{display:none!important}
+
+.module-header{
+  background:#081b29;
+  border:1.5px solid #00abf0;
+  padding:15px;
+  border-radius:10px;
+  cursor:pointer;
+  margin:10px 0;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+}
+
+.module-header:hover{background:#0f2e45}
+.module-content{display:none;padding:10px 0}
+.module-content.active{display:block}
+
+.quiz-q{
+  background:#081b29;
+  border:1px solid #ffd166;
+  border-radius:8px;
+  padding:12px;
+  margin:8px 0;
+}
+
+.section{scroll-margin-top:85px}
+
+@media(max-width:700px){
+  .app-layout{display:block}
+  .sidebar{
+    position:sticky;
+    top:65px;
+    width:100%;
+    height:auto;
+    display:flex;
+    overflow-x:auto;
+    padding:8px;
+    z-index:9;
+  }
+  .sidebar-title{display:none}
+  .side-btn{width:auto;flex-shrink:0;white-space:nowrap}
+  .main-content{padding:10px}
+  .card{padding:15px}
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div><b>LearnHub LMS</b></div>
+  <div>
+    <span id="userInfo"></span>
+    <button id="logoutBtn" class="hidden">Logout</button>
+  </div>
+</nav>
+
+<!-- LOGIN / REGISTER -->
+<div id="authSection" class="card" style="max-width:520px;margin:30px auto">
+  <h2 style="color:#00abf0;text-align:center">Login / Register</h2>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <select id="role">
+    <option value="student">Student</option>
+    <option value="instructor">Instructor</option>
+  </select>
+
+  <br><br>
+  <button id="registerBtn">Register</button>
+  <button id="loginBtn">Login</button>
+  <p id="authMsg"></p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="app-layout hidden">
+
+  <aside class="sidebar">
+    <div class="sidebar-title">LEARNING</div>
+
+    <button class="side-btn active" data-target="home">🏠 Dashboard</button>
+    <button class="side-btn" data-target="courses">📚 All Courses</button>
+    <button class="side-btn" data-target="notes">📘 Notes Channel</button>
+    <button class="side-btn" data-target="assignments">📝 Assignments</button>
+    <button class="side-btn" data-target="quizzes">🧠 Quizzes</button>
+
+    <div class="sidebar-title">COMMUNITY</div>
+    <button class="side-btn" data-target="assignments">💬 Learning Activities</button>
+  </aside>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- DASHBOARD HOME -->
+      <section id="home" class="card section">
+        <h2 style="color:#00abf0">Welcome to LearnHub LMS!</h2>
+        <p>Continue your learning journey by exploring courses, notes, assignments and quizzes.</p>
+      </section>
+
+      
+      <!-- COURSES -->
+      <section id="courses" class="card section">
+        <h3>📚 1. All Courses - 4 Courses</h3>
+
+        <div class="course-grid">
+
+          <div class="course-card">
+            <div class="course-icon">💻</div>
+            <h4>1. C Programming</h4>
+            <p>Learn programming fundamentals, structures, pointers, file handling, and dynamic memory allocation.</p>
+            <div class="course-info">📖 Beginner Level</div>
+            <button onclick="document.getElementById('notes').scrollIntoView({behavior:'smooth'});">View Notes</button>
+          </div>
+
+          <div class="course-card">
+            <div class="course-icon">🐍</div>
+            <h4>2. Python Programming</h4>
+            <p>Explore Python basics, classes and objects, dictionaries, file handling, and Flask/Django backend development.</p>
+            <div class="course-info">📖 Beginner to Intermediate</div>
+            <button onclick="document.getElementById('notes').scrollIntoView({behavior:'smooth'});">View Notes</button>
+          </div>
+
+          <div class="course-card">
+            <div class="course-icon">☕</div>
+            <h4>3. Java Programming</h4>
+            <p>Study OOP concepts, constructors, multithreading, JDBC, and GUI development using Swing and AWT.</p>
+            <div class="course-info">📖 Programming</div>
+            <button onclick="document.getElementById('notes').scrollIntoView({behavior:'smooth'});">View Notes</button>
+          </div>
+
+          <div class="course-card">
+            <div class="course-icon">🌐</div>
+            <h4>4. Web Technology</h4>
+            <p>Learn HTML5, CSS3, JavaScript, responsive design, local storage, and the Fetch API.</p>
+            <div class="course-info">📖 Web Development</div>
+            <button onclick="document.getElementById('notes').scrollIntoView({behavior:'smooth'});">View Notes</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- NOTES -->
+
+      
+<!-- NOTES -->
+<section id="notes" class="card section">
+  <h3>📘 2. Notes Channel</h3>
+
+  <!-- C PROGRAMMING -->
+  <div class="module-header" onclick="toggleModule('notes-c')">
+    📄 C Programming Notes <span>▼</span>
+  </div>
+  <div id="notes-c" class="module-content">
+    <div class="note-box">
+      <h4>📄 C Programming Notes</h4>
+
+      <b>1. Structure in C</b>
+      <p>A structure is a user-defined data type used to group different types of variables under one name.</p>
+      <pre>struct Student {
+    int id;
+    char name[50];
+    float marks;
+};</pre>
+
+      <b>2. Pointers</b>
+      <p>A pointer stores the memory address of another variable.</p>
+      <pre>int number = 10;
+int *ptr = &number;
+printf("%d", *ptr);</pre>
+
+      <b>3. Dynamic Memory Allocation</b>
+      <p>Dynamic memory allocation reserves memory during program execution. Common functions are malloc(), calloc(), realloc() and free().</p>
+      <pre>int *ptr = malloc(5 * sizeof(int));
+
+if (ptr != NULL) {
+    ptr[0] = 100;
+    free(ptr);
+}</pre>
+
+      <b>4. File Handling</b>
+      <p>File handling stores and retrieves information from files using functions such as fopen(), fprintf() and fclose().</p>
+      <pre>FILE *fp = fopen("student.txt", "w");
+
+if (fp != NULL) {
+    fprintf(fp, "Welcome to LearnHub");
+    fclose(fp);
+}</pre>
+
+      <b>5. Important Points</b>
+      <ul>
+        <li>Structures group related data of different types.</li>
+        <li>Pointers store memory addresses.</li>
+        <li>Check whether memory allocation succeeds.</li>
+        <li>Use free() to release dynamically allocated memory.</li>
+        <li>Use fclose() to close files.</li>
+      </ul>
+      
+      <h3>6. Functions in C</h3>
+      <p>A function is a block of code that performs a specific task. Functions divide a large program into smaller parts and make it easier to understand, test, and reuse. C provides library functions such as printf() and scanf(). Programmers can also create their own functions.</p>
+      <pre><code>int add(int a, int b) {
+    return a + b;
+}</code></pre>
+
+      <h3>7. Arrays in C</h3>
+      <p>An array stores multiple values of the same data type using a single variable name. Each element is accessed using an index starting from 0. Arrays are useful for storing student marks, numbers, and other collections of data.</p>
+      <pre><code>int marks[3] = {80, 85, 90};
+printf("%d", marks[0]);</code></pre>
+
+      <h3>8. Loops in C</h3>
+      <p>Loops execute a block of code repeatedly. C supports for, while, and do-while loops. A for loop is useful when the number of repetitions is known. Loops reduce repeated code and make programs more efficient.</p>
+      <pre><code>for(int i = 1; i <= 5; i++) {
+    printf("%d ", i);
+}</code></pre>
+
+      <h3>9. Conditional Statements</h3>
+      <p>Conditional statements allow a program to make decisions. The if statement executes code when a condition is true. The if-else statement provides another action when the condition is false.</p>
+      <pre><code>int age = 18;
+if(age >= 18) {
+    printf("Eligible to vote");
+} else {
+    printf("Not eligible");
+}</code></pre>
+
+      <h3>10. Advantages of C</h3>
+      <p>C is a fast and efficient programming language. It supports structured programming, pointers, arrays, and functions. It is commonly used in operating systems, embedded systems, and other applications where performance is important.</p>
+
+    </div>
+  </div>
+
+  <!-- PYTHON PROGRAMMING -->
+  <div class="module-header" onclick="toggleModule('notes-python')">
+    📄 Python Programming Notes <span>▼</span>
+  </div>
+  <div id="notes-python" class="module-content">
+    <div class="note-box">
+      <h4>📄 Python Programming Notes</h4>
+
+      <b>1. Class and Object</b>
+      <p>A class is a blueprint for creating objects. An object is an instance of a class.</p>
+      <pre>class Course:
+    def __init__(self, name):
+        self.name = name
+
+    def display(self):
+        print(self.name)
+
+course = Course("Python")
+course.display()</pre>
+
+      <b>2. List, Tuple and Dictionary</b>
+      <ul>
+        <li><b>List:</b> Ordered and mutable; uses [].</li>
+        <li><b>Tuple:</b> Ordered and immutable; uses ().</li>
+        <li><b>Dictionary:</b> Stores key-value pairs; uses {}.</li>
+      </ul>
+      <pre>courses = ["C", "Python", "Java"]
+days = ("Monday", "Tuesday")
+student = {"name": "Astha", "marks": 85}
+
+print(courses[0])
+print(student["name"])</pre>
+
+      <b>3. File Handling</b>
+      <p>Python uses open() to open files. Common modes are r, w, a and x.</p>
+      <pre>with open("notes.txt", "w") as file:
+    file.write("LearnHub Python Notes")
+
+with open("notes.txt", "r") as file:
+    print(file.read())</pre>
+
+      <b>4. Exception Handling</b>
+      <p>try-except handles errors without abruptly stopping the program.</p>
+      <pre>try:
+    number = int(input("Enter a number: "))
+    print(10 / number)
+except ValueError:
+    print("Please enter a valid number")
+except ZeroDivisionError:
+    print("Cannot divide by zero")</pre>
+
+      <b>5. Flask and Django</b>
+      <p>Flask is a lightweight Python web framework. Django provides built-in features for web development. Both can be used to build an LMS backend.</p>
+          <h3>6. Functions in Python</h3>
+      <p>A function is a reusable block of code that performs a specific task. Functions help divide a program into smaller parts, reduce code repetition, and make programs easier to understand. In Python, functions are defined using the def keyword. A function can accept parameters and return a result using the return statement.</p>
+      <pre><code>def add(a, b):
+    return a + b
+
+result = add(10, 20)
+print(result)</code></pre>
+      <p>In this example, add() accepts two numbers and returns their sum. Functions are useful when the same operation needs to be performed multiple times.</p>
+
+      <h3>7. Loops in Python</h3>
+      <p>Loops are used to execute statements repeatedly. Python provides for loops and while loops. A for loop is commonly used to iterate over a sequence such as a list or string. A while loop continues executing as long as its condition remains true.</p>
+      <pre><code>for course in ["C", "Python", "Java"]:
+    print(course)
+
+count = 1
+while count <= 3:
+    print(count)
+    count += 1</code></pre>
+      <p>Loops reduce repetitive code and are useful for processing collections, repeating calculations, and automating tasks.</p>
+
+      <h3>8. Object-Oriented Programming</h3>
+      <p>Object-Oriented Programming (OOP) is a programming approach based on classes and objects. A class defines the properties and behavior of objects. An object is an instance of a class. Python supports important OOP concepts such as inheritance, encapsulation, polymorphism, and abstraction.</p>
+      <pre><code>class Student:
+    def __init__(self, name):
+        self.name = name
+
+    def display(self):
+        print(self.name)
+
+student = Student("Astha")
+student.display()</code></pre>
+      <p>Here, Student is a class, and student is an object. The __init__() method initializes the object's data, while display() prints the student's name. OOP helps organize larger programs into reusable components.</p>
+
+      <h3>9. Modules and Packages</h3>
+      <p>A module is a Python file containing reusable code such as functions, classes, and variables. Modules allow programmers to organize code and use it in different programs. Python provides built-in modules such as math, random, and datetime.</p>
+      <p>A package is a way to organize related modules in a directory. Modules and packages make large projects easier to maintain and help avoid writing the same code repeatedly.</p>
+      <pre><code>import math
+
+print(math.sqrt(25))
+print(math.pi)</code></pre>
+
+      <h3>10. Advantages of Python</h3>
+      <ul>
+        <li>Python has simple and readable syntax, making it suitable for beginners.</li>
+        <li>It supports procedural, functional, and object-oriented programming.</li>
+        <li>It has a large collection of libraries and frameworks.</li>
+        <li>Python is used in web development, automation, data analysis, and artificial intelligence.</li>
+        <li>It supports file handling, database connectivity, and rapid application development.</li>
+      </ul>
+      <p>Python is widely used because it allows developers to build applications with relatively little code. However, performance and memory usage should be considered when choosing it for a particular project.</p>
+    
+      <h3>6. Introduction to Python Programming</h3>
+      <p>Python is a high-level, interpreted, general-purpose programming language. It was created by Guido van Rossum and first released in 1991. Python is popular because its syntax is simple, readable, and easy to understand. It is used in web development, data science, artificial intelligence, machine learning, automation, scientific computing, and software development.</p>
+
+      <p>Python programs are generally shorter and easier to read than programs written in many other programming languages. Python supports procedural, object-oriented, and functional programming styles. It also provides a large standard library and many external packages.</p>
+
+      <h3>7. Features of Python</h3>
+      <ul>
+        <li><b>Easy to Learn:</b> Python has simple and readable syntax.</li>
+        <li><b>Interpreted Language:</b> Python code is executed by the Python interpreter.</li>
+        <li><b>High-Level Language:</b> Programmers do not need to manage most low-level hardware details.</li>
+        <li><b>Portable:</b> Python programs can run on different operating systems when the required environment is available.</li>
+        <li><b>Open Source:</b> Python is freely available to use and distribute under its licence.</li>
+        <li><b>Object-Oriented:</b> Python supports classes, objects, inheritance, and polymorphism.</li>
+        <li><b>Large Standard Library:</b> Python includes modules for files, mathematics, dates, networking, and more.</li>
+        <li><b>Dynamic Typing:</b> Variable types are determined at runtime.</li>
+        <li><b>Extensible:</b> Python can work with libraries and components written in other languages.</li>
+      </ul>
+
+      <h3>8. Applications of Python</h3>
+      <p>Python is used in many fields of computer science and information technology.</p>
+      <ul>
+        <li><b>Web Development:</b> Frameworks such as Django and Flask are used to build web applications.</li>
+        <li><b>Data Science:</b> Libraries such as Pandas and NumPy help analyse and process data.</li>
+        <li><b>Artificial Intelligence:</b> Python is widely used to develop AI-based applications.</li>
+        <li><b>Machine Learning:</b> Libraries help train models and make predictions from data.</li>
+        <li><b>Automation:</b> Python can automate repetitive tasks such as renaming files and processing reports.</li>
+        <li><b>Desktop Applications:</b> Libraries such as Tkinter can be used to create graphical applications.</li>
+        <li><b>Scientific Computing:</b> Python supports numerical calculations, simulations, and research.</li>
+        <li><b>Cybersecurity:</b> Python can help with authorised security testing and log analysis.</li>
+      </ul>
+
+      <h3>9. Installing Python and Running a Program</h3>
+      <p>To run Python programs, install Python from the official Python website and ensure that the interpreter is available on your computer. An editor such as Visual Studio Code can be used to write Python code. You can run a program from a terminal using the Python command followed by the filename.</p>
+      <pre>print("Hello, World!")</pre>
+      <p>Save the program in a file named hello.py. Depending on your system, run it using <b>python hello.py</b> or <b>python3 hello.py</b>. The output will be Hello, World!</p>
+
+      <h3>10. Python Syntax and Indentation</h3>
+      <p>Syntax refers to the rules used to write valid statements in a programming language. Python uses indentation to define blocks of code. Indentation is especially important in conditions, loops, functions, and classes. Incorrect indentation can cause an IndentationError.</p>
+      <pre>if 10 > 5:
+    print("10 is greater than 5")
+    print("This line is inside the if block")
+
+print("This line is outside the if block")</pre>
+      <p>Python commonly uses four spaces for each indentation level. Consistent indentation improves readability and prevents errors.</p>
+
+      <h3>11. Comments in Python</h3>
+      <p>Comments explain the purpose of code and are ignored by the Python interpreter. A single-line comment starts with the hash symbol (#). Triple-quoted strings are often used for documentation strings, called docstrings, when placed in the appropriate position.</p>
+      <pre># This is a single-line comment
+name = "Student"
+print(name)
+
+def greet():
+    """Display a greeting message."""
+    print("Welcome to Python")</pre>
+      <p>Good comments explain why a piece of code exists rather than simply repeating what the code already shows.</p>
+
+      <h3>12. Variables and Constants</h3>
+      <p>A variable is a name that refers to a value. In Python, a variable is created when a value is assigned to it. Python does not require a separate declaration of the variable's type. Variable names should be meaningful and follow Python naming rules.</p>
+      <pre>student_name = "Riya"
+age = 20
+percentage = 85.5
+is_enrolled = True
+
+print(student_name)
+print(age)
+print(percentage)
+print(is_enrolled)</pre>
+      <p>Python variable names are case-sensitive, so age and Age are different names. Names cannot begin with a digit and cannot be Python keywords. Constants are usually written in uppercase by convention.</p>
+      <pre>COLLEGE_NAME = "ABC College"
+MAX_MARKS = 100</pre>
+
+      <h3>13. Data Types in Python</h3>
+      <p>A data type identifies the kind of value stored in a variable. Python has several built-in data types.</p>
+      <ul>
+        <li><b>int:</b> Represents whole numbers, such as 10 and -25.</li>
+        <li><b>float:</b> Represents decimal numbers, such as 3.14.</li>
+        <li><b>str:</b> Represents text, such as "Python".</li>
+        <li><b>bool:</b> Represents True or False.</li>
+        <li><b>list:</b> An ordered, changeable collection.</li>
+        <li><b>tuple:</b> An ordered, unchangeable collection.</li>
+        <li><b>set:</b> A collection of unique elements.</li>
+        <li><b>dict:</b> A collection of key-value pairs.</li>
+        <li><b>NoneType:</b> Represents the absence of a value using None.</li>
+      </ul>
+      <pre>number = 25
+price = 99.50
+language = "Python"
+is_valid = True
+items = [10, 20, 30]
+coordinates = (4, 5)
+unique_numbers = {1, 2, 3}
+student = {"name": "Riya", "age": 20}
+result = None
+
+print(type(number))
+print(type(language))</pre>
+
+      <h3>14. Type Conversion</h3>
+      <p>Type conversion means changing a value from one data type to another. Functions such as int(), float(), str(), and bool() can convert compatible values. Some conversions may raise a ValueError if the input cannot be converted.</p>
+      <pre>number_text = "25"
+number = int(number_text)
+
+price = float("49.99")
+message = str(100)
+
+print(number + 5)
+print(price)
+print(message)</pre>
+      <p>When taking numerical input from a user, remember that input() returns text. Convert the input before performing arithmetic operations.</p>
+      <pre>age = int(input("Enter your age: "))
+print("Next year you will be", age + 1)</pre>
+
+      <h3>15. Input and Output Functions</h3>
+      <p>The input() function accepts information from the user. The print() function displays information on the screen. Multiple values can be displayed using commas, and formatted strings can be used to insert variables into text.</p>
+      <pre>name = input("Enter your name: ")
+course = input("Enter your course: ")
+
+print("Student Name:", name)
+print("Course:", course)
+print(f"Welcome {name}, you are studying {course}.")</pre>
+      <p>Formatted strings, also called f-strings, are useful for creating readable output. Expressions can be placed inside curly braces within an f-string.</p>
+
+      <h3>16. Operators in Python</h3>
+      <p>Operators perform calculations, comparisons, and logical operations on values.</p>
+      <ul>
+        <li><b>Arithmetic:</b> +, -, *, /, //, %, **</li>
+        <li><b>Comparison:</b> ==, !=, &gt;, &lt;, &gt;=, &lt;=</li>
+        <li><b>Assignment:</b> =, +=, -=, *=, and other assignment operators.</li>
+        <li><b>Logical:</b> and, or, not</li>
+        <li><b>Membership:</b> in, not in</li>
+        <li><b>Identity:</b> is, is not</li>
+      </ul>
+      <pre>a = 10
+b = 3
+
+print(a + b)
+print(a // b)
+print(a % b)
+print(a ** b)
+print(a > b)
+print(a > 5 and b < 5)
+print(3 in [1, 2, 3])</pre>
+      <p>The division operator / returns a division result, while // performs floor division. The % operator returns the remainder, and ** calculates a power.</p>
+
+      <h3>17. Conditional Statements</h3>
+      <p>Conditional statements allow a program to make decisions. The if statement executes a block when a condition is true. The elif statement checks another condition, and else provides a default block when earlier conditions are false.</p>
+      <pre>marks = 78
+
+if marks >= 90:
+    print("Grade A")
+elif marks >= 75:
+    print("Grade B")
+elif marks >= 50:
+    print("Grade C")
+else:
+    print("Needs improvement")</pre>
+      <p>Conditions are useful for checking eligibility, calculating grades, validating data, and controlling application behaviour.</p>
+
+      <h3>18. Loops in Python</h3>
+      <p>Loops execute a block of code repeatedly. Python provides for loops and while loops. A for loop is often used to iterate over a sequence, while a while loop continues as long as its condition remains true.</p>
+      <pre>for number in range(1, 6):
+    print(number)
+
+count = 1
+while count <= 5:
+    print(count)
+    count += 1</pre>
+      <p>The range() function generates a sequence of numbers. Its ending value is excluded. The break statement stops a loop, while continue skips the remaining statements in the current iteration.</p>
+      <pre>for number in range(1, 8):
+    if number == 3:
+        continue
+    if number == 6:
+        break
+    print(number)</pre>
+
+      <h3>19. Strings and String Operations</h3>
+      <p>A string is a sequence of characters enclosed in single quotes, double quotes, or triple quotes. Strings are immutable, which means their characters cannot be changed directly after creation.</p>
+      <pre>text = "Python Programming"
+
+print(text.upper())
+print(text.lower())
+print(text.title())
+print(text.replace("Python", "Java"))
+print(text.find("Programming"))
+print(text.startswith("Python"))
+print(len(text))</pre>
+      <p>String indexing accesses individual characters, and slicing extracts part of a string. The first character has index zero. Negative indices count from the end.</p>
+      <pre>language = "Python"
+
+print(language[0])
+print(language[-1])
+print(language[0:3])
+print(language[::-1])</pre>
+      <p>Common string methods include strip(), split(), join(), replace(), and find(). These methods are useful when processing names, forms, documents, and other text data.</p>
+
+      <h3>20. Lists in Python</h3>
+      <p>A list stores multiple values in a single variable. Lists preserve order, allow duplicate elements, and can be modified after creation. They can contain values of different data types, although related values are often stored together.</p>
+      <pre>subjects = ["Python", "Java", "HTML"]
+
+subjects.append("CSS")
+subjects.insert(1, "C")
+subjects.remove("Java")
+
+print(subjects)
+print(subjects[0])
+print(len(subjects))</pre>
+      <p>Important list methods include append(), extend(), insert(), remove(), pop(), sort(), reverse(), and clear(). List slicing can retrieve a range of elements.</p>
+      <pre>numbers = [10, 20, 30, 40, 50]
+print(numbers[1:4])
+
+for item in numbers:
+    print(item)</pre>
+
+      <h3>21. Tuples, Sets, and Dictionaries</h3>
+      <p><b>Tuples:</b> Tuples are ordered collections that cannot be changed after creation. They are useful for storing related values that should remain fixed.</p>
+      <pre>student_record = ("Riya", 20, "BCA")
+print(student_record[0])
+print(len(student_record))</pre>
+      <p><b>Sets:</b> Sets store unique elements and are useful for removing duplicates and performing set operations.</p>
+      <pre>numbers = {1, 2, 2, 3, 4}
+print(numbers)
+
+first = {1, 2, 3}
+second = {3, 4, 5}
+
+print(first.union(second))
+print(first.intersection(second))
+print(first.difference(second))</pre>
+      <p><b>Dictionaries:</b> A dictionary stores data as key-value pairs. Keys are unique, and values can be retrieved using their keys.</p>
+      <pre>student = {
+    "name": "Riya",
+    "course": "BCA",
+    "semester": 4
+}
+
+print(student["name"])
+print(student.get("course"))
+
+student["semester"] = 5
+student["city"] = "Lucknow"</pre>
+      <p>Dictionaries are useful for storing student details, product information, configuration settings, and records returned by web APIs.</p>
+
+      <h3>22. Functions in Python</h3>
+      <p>A function is a reusable block of code that performs a particular task. Functions help divide a large program into smaller and manageable parts. In Python, a function is defined using the def keyword.</p>
+      <pre>def greet(name):
+    print("Hello", name)
+
+greet("Riya")
+greet("Aman")</pre>
+      <p>Functions can accept parameters and return results. The return statement sends a value back to the caller.</p>
+      <pre>def add(a, b):
+    return a + b
+
+result = add(10, 20)
+print(result)</pre>
+      <p>Python supports default parameters and keyword arguments. Functions can also return multiple values using a tuple.</p>
+      <pre>def calculate_total(price, quantity=1):
+    return price * quantity
+
+print(calculate_total(100))
+print(calculate_total(100, quantity=3))</pre>
+
+      <h3>23. Scope of Variables</h3>
+      <p>Scope describes where a variable can be accessed. A local variable is created inside a function and is generally available only within that function. A global variable is defined outside functions and can be read from different parts of a module. Using local variables where possible makes programs easier to understand and maintain.</p>
+      <pre>college = "ABC College"
+
+def show_details():
+    course = "BCA"
+    print(college)
+    print(course)
+
+show_details()</pre>
+      <p>A variable created inside show_details() is local to that function and cannot normally be accessed outside it. The global keyword can be used to reassign a global variable inside a function, but it should be used carefully.</p>
+
+      <h3>24. Lambda Functions</h3>
+      <p>A lambda function is a small anonymous function written using the lambda keyword. It can contain a single expression and is often used for short operations.</p>
+      <pre>square = lambda number: number * number
+print(square(5))
+
+students = [("Riya", 85), ("Aman", 75), ("Neha", 92)]
+students.sort(key=lambda student: student[1])
+print(students)</pre>
+      <p>For more complex operations, a regular function defined with def is usually easier to read.</p>
+
+      <h3>25. List Comprehensions</h3>
+      <p>A list comprehension provides a concise way to create a new list from an iterable. It can include an expression and an optional condition.</p>
+      <pre>squares = [number * number for number in range(1, 6)]
+print(squares)
+
+even_numbers = [
+    number for number in range(1, 11)
+    if number % 2 == 0
+]
+print(even_numbers)</pre>
+      <p>List comprehensions are convenient for transforming data, filtering records, and generating calculated values. For complicated logic, a normal loop may be clearer.</p>
+
+      <h3>26. Modules and Packages</h3>
+      <p>A module is a Python file containing reusable code such as functions, classes, and variables. A package groups related modules together. Import statements make functionality available to a program.</p>
+      <pre>import math
+
+print(math.sqrt(25))
+print(math.pi)
+
+from datetime import date
+print(date.today())</pre>
+      <p>Python includes standard modules such as math, random, datetime, os, and json. External packages can be installed using pip. Use a virtual environment to keep project dependencies separate.</p>
+      <pre>python -m venv .venv</pre>
+      <p>After creating the environment, activate it using the command appropriate for your operating system, then install required packages with pip.</p>
+
+      <h3>27. Exception Handling</h3>
+      <p>An exception is an error detected while a program is running. Exception handling allows a program to respond to expected problems without terminating unexpectedly. Python uses try, except, else, and finally blocks for exception handling.</p>
+      <pre>try:
+    number = int(input("Enter a number: "))
+    result = 100 / number
+except ValueError:
+    print("Please enter a valid integer.")
+except ZeroDivisionError:
+    print("Division by zero is not allowed.")
+else:
+    print("Result:", result)
+finally:
+    print("Program finished.")</pre>
+      <p>Catch specific exceptions rather than using a broad exception handler unnecessarily. Clear error messages help users understand what went wrong.</p>
+
+      <h3>28. File Handling</h3>
+      <p>File handling allows programs to read and write information stored in files. The open() function opens a file. Common modes include r for reading, w for writing, a for appending, and b for binary operations. The with statement automatically closes a file when the block ends.</p>
+      <pre>with open("notes.txt", "w", encoding="utf-8") as file:
+    file.write("Python is easy to learn.\\n")
+    file.write("File handling is important.")
+
+with open("notes.txt", "r", encoding="utf-8") as file:
+    content = file.read()
+    print(content)</pre>
+      <p>Writing with mode w replaces existing file contents, so use it carefully. Append mode a adds new content at the end. Handle file-related exceptions when a file might be missing or inaccessible.</p>
+
+      <h3>29. Object-Oriented Programming (OOP)</h3>
+      <p>Object-Oriented Programming is a programming approach that organizes software around classes and objects. A class defines the structure and behaviour of objects. An object is an instance of a class and can contain data and methods.</p>
+      <pre>class Student:
+    def __init__(self, name, course):
+        self.name = name
+        self.course = course
+
+    def display(self):
+        print("Name:", self.name)
+        print("Course:", self.course)
+
+student1 = Student("Riya", "BCA")
+student1.display()</pre>
+      <p>The __init__() method initializes an object when it is created. The self parameter refers to the current instance. OOP helps organize larger applications into reusable components.</p>
+
+      <h3>30. Main Principles of OOP</h3>
+      <ul>
+        <li><b>Encapsulation:</b> Combines data and methods in a class and controls how an object is used.</li>
+        <li><b>Inheritance:</b> Allows a class to reuse or extend the behaviour of another class.</li>
+        <li><b>Polymorphism:</b> Allows different objects to respond to a common operation in their own ways.</li>
+        <li><b>Abstraction:</b> Focuses on essential behaviour while hiding unnecessary implementation details.</li>
+      </ul>
+      <pre>class Person:
+    def __init__(self, name):
+        self.name = name
+
+    def introduce(self):
+        print("My name is", self.name)
+
+class Student(Person):
+    def introduce(self):
+        print(self.name, "is a student")
+
+person = Person("Aman")
+student = Student("Riya")
+
+person.introduce()
+student.introduce()</pre>
+      <p>In this example, Student inherits from Person and overrides the introduce() method. This demonstrates inheritance and polymorphism.</p>
+
+      <h3>31. Iterators and Generators</h3>
+      <p>An iterator is an object that provides values one at a time. A generator is a convenient way to create an iterator using a function with the yield keyword. Generators can save memory when processing large sequences because values are produced as needed.</p>
+      <pre>def count_up_to(limit):
+    number = 1
+    while number <= limit:
+        yield number
+        number += 1
+
+for value in count_up_to(5):
+    print(value)</pre>
+      <p>Generators are useful when reading large files, processing data streams, or generating sequences that do not need to be stored entirely in memory.</p>
+
+      <h3>32. Working with JSON</h3>
+      <p>JSON stands for JavaScript Object Notation. It is a common format for exchanging structured data between applications and web services. Python's json module can convert Python data structures to JSON text and parse JSON text into Python objects.</p>
+      <pre>import json
+
+student = {
+    "name": "Riya",
+    "course": "BCA",
+    "semester": 4
+}
+
+json_text = json.dumps(student, indent=4)
+print(json_text)
+
+data = json.loads(json_text)
+print(data["name"])</pre>
+      <p>JSON is widely used in web APIs, configuration files, and data exchange between frontend and backend systems.</p>
+
+      <h3>33. Database Connectivity</h3>
+      <p>Database connectivity allows an application to store, retrieve, update, and delete information in a database. Python can work with SQLite using the built-in sqlite3 module. Other databases, such as MySQL and PostgreSQL, can be accessed through suitable drivers or libraries.</p>
+      <pre>import sqlite3
+
+connection = sqlite3.connect("college.db")
+cursor = connection.cursor()
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS students (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        course TEXT NOT NULL
+    )
+""")
+
+cursor.execute(
+    "INSERT INTO students (name, course) VALUES (?, ?)",
+    ("Riya", "BCA")
+)
+
+connection.commit()
+
+cursor.execute("SELECT id, name, course FROM students")
+for record in cursor.fetchall():
+    print(record)
+
+connection.close()</pre>
+      <p>Use parameterized queries instead of combining user input directly into SQL strings. This reduces the risk of SQL injection. Production applications should also handle database errors and manage connections carefully.</p>
+
+      <h3>34. Python Libraries for Data Analysis</h3>
+      <p>Python has many libraries for data analysis and visualization. NumPy supports efficient numerical arrays and mathematical operations. Pandas provides data structures such as Series and DataFrame for working with tables. Matplotlib can create charts and graphs.</p>
+      <pre># Example using pandas after installing it
+import pandas as pd
+
+data = {
+    "Subject": ["Python", "Java", "HTML"],
+    "Marks": [85, 78, 90]
+}
+
+table = pd.DataFrame(data)
+print(table)
+print(table["Marks"].mean())</pre>
+      <p>These libraries are useful for summarizing results, analysing student performance, cleaning datasets, and presenting information clearly.</p>
+
+      <h3>35. Introduction to Web Development with Python</h3>
+      <p>Python can be used to build the backend of a website or web application. The frontend usually handles the user interface using HTML, CSS, and JavaScript. The backend handles application logic, authentication, database access, and server-side processing.</p>
+      <p>Flask is a lightweight web framework that provides a simple starting point. Django is a larger framework that includes features such as URL routing, templates, an ORM, authentication support, and an administrative interface.</p>
+      <pre># Basic Flask application
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Welcome to the Learning Management System!"
+
+if __name__ == "__main__":
+    app.run(debug=True)</pre>
+      <p>For local development, install Flask in your project environment before running this example. Debug mode should not be enabled on a public production server.</p>
+
+      <h3>36. APIs and HTTP Requests</h3>
+      <p>An API, or Application Programming Interface, allows different software systems to communicate. Web APIs commonly use HTTP methods such as GET to retrieve data, POST to create data, PUT or PATCH to update data, and DELETE to remove data. Python can communicate with web APIs using suitable libraries.</p>
+      <pre># Conceptual example using the requests library
+import requests
+
+response = requests.get(
+    "https://example.com/api",
+    timeout=10
+)
+
+print(response.status_code)
+print(response.text)</pre>
+      <p>This is an illustrative example. A real API requires a valid endpoint and may require authentication, request parameters, or error handling. Do not share private API keys or passwords in source code.</p>
+
+      <h3>37. Testing and Debugging</h3>
+      <p>Testing checks whether a program behaves as expected. Debugging is the process of finding and correcting errors. Python provides the assert statement for simple checks, and the unittest module for writing automated tests.</p>
+      <pre>def add(a, b):
+    return a + b
+
+assert add(2, 3) == 5
+assert add(-1, 1) == 0
+
+print("Basic tests passed")</pre>
+      <p>Test normal inputs, boundary values, and invalid inputs. Read error messages carefully, use meaningful variable names, and divide complex problems into smaller functions to make debugging easier.</p>
+
+      <h3>38. Common Errors in Python</h3>
+      <ul>
+        <li><b>SyntaxError:</b> The code does not follow Python's syntax rules.</li>
+        <li><b>IndentationError:</b> The indentation of a code block is incorrect.</li>
+        <li><b>NameError:</b> A name is used before it is defined or is unavailable in the current scope.</li>
+        <li><b>TypeError:</b> An operation is used with an unsuitable type.</li>
+        <li><b>ValueError:</b> A value has the correct general type but an invalid value for the operation.</li>
+        <li><b>IndexError:</b> A sequence is accessed using an invalid index.</li>
+        <li><b>KeyError:</b> A dictionary key does not exist.</li>
+        <li><b>ZeroDivisionError:</b> A number is divided by zero.</li>
+        <li><b>FileNotFoundError:</b> A requested file cannot be found.</li>
+      </ul>
+      <p>To reduce errors, check input values, use correct indentation, validate data, and read traceback messages from the bottom upward to identify the exception and relevant line.</p>
+
+      <h3>39. Best Practices in Python Programming</h3>
+      <ul>
+        <li>Choose meaningful names for variables, functions, and classes.</li>
+        <li>Follow consistent indentation and the PEP 8 style guidelines.</li>
+        <li>Write small functions that perform focused tasks.</li>
+        <li>Use comments and docstrings where they add useful explanations.</li>
+        <li>Validate user input and handle expected exceptions.</li>
+        <li>Use virtual environments to manage project dependencies.</li>
+        <li>Never store passwords, secret keys, or private tokens directly in public code.</li>
+        <li>Use parameterized database queries and validate external data.</li>
+        <li>Write tests for important functions and application behaviour.</li>
+        <li>Use version control, such as Git, to track code changes.</li>
+      </ul>
+
+      <h3>40. Advantages and Limitations of Python</h3>
+      <p><b>Advantages:</b> Python has readable syntax, a large community, extensive libraries, and broad applications. It supports rapid development and makes it easier to create prototypes and automate repetitive work.</p>
+      <p><b>Limitations:</b> Python may run slower than compiled languages for some CPU-intensive tasks. It can also use more memory in certain situations, and some mobile or low-level applications may be better suited to other technologies. The best language depends on the project's requirements.</p>
+
+      <h3>41. Conclusion</h3>
+      <p>Python is a versatile programming language that can be used for beginner projects as well as large software systems. Learning variables, data types, operators, conditions, loops, functions, collections, file handling, exception handling, and object-oriented programming provides a strong foundation. Students can then explore databases, web development, automation, data science, and artificial intelligence through practical projects.</p>
+
+    </div>
+  </div>
+
+  <!-- JAVA PROGRAMMING -->
+  <div class="module-header" onclick="toggleModule('notes-java')">
+    📄 Java Programming Notes <span>▼</span>
+  </div>
+  <div id="notes-java" class="module-content">
+    <div class="note-box">
+      <h4>📄 Java Programming Notes</h4>
+
+      <b>1. Four Pillars of OOP</b>
+      <ul>
+        <li><b>Encapsulation:</b> Combines data and methods within a class.</li>
+        <li><b>Inheritance:</b> Allows a class to inherit from another class.</li>
+        <li><b>Polymorphism:</b> Allows methods or interfaces to have different behaviours.</li>
+        <li><b>Abstraction:</b> Hides implementation details.</li>
+      </ul>
+
+      <b>2. Constructor Overloading</b>
+      <p>Constructor overloading defines multiple constructors with different parameter lists.</p>
+      <pre>class Course {
+    String name;
+
+    Course() {
+        name = "Not Assigned";
+    }
+
+    Course(String n) {
+        name = n;
+    }
+}</pre>
+
+      <b>3. Multithreading</b>
+      <p>Multithreading allows multiple threads to execute concurrently.</p>
+      <pre>class MyTask extends Thread {
+    public void run() {
+        System.out.println("Task running");
+    }
+}
+
+// MyTask task = new MyTask();
+// task.start();</pre>
+
+      <b>4. JDBC</b>
+      <p>JDBC stands for Java Database Connectivity. It allows Java applications to communicate with databases.</p>
+      <ul>
+        <li>Import JDBC packages.</li>
+        <li>Configure the database connection and driver.</li>
+        <li>Obtain a Connection.</li>
+        <li>Execute SQL using PreparedStatement or Statement.</li>
+        <li>Process results and close resources.</li>
+      </ul>
+
+      <b>5. Swing and AWT</b>
+      <p>AWT and Swing are Java GUI toolkits. Swing provides components such as JFrame, JButton, JLabel and JTextField.</p>
+    
+      <h3>6. Introduction to Java Programming</h3>
+      <p>Java is a high-level, general-purpose, class-based programming language. It was developed by James Gosling and his team at Sun Microsystems and was released in 1995. Java is widely used to develop desktop applications, web applications, enterprise software, and Android applications.</p>
+      <p>Java was designed with the principle of "Write Once, Run Anywhere" (WORA). This means that compiled Java bytecode can run on any system that has a compatible Java Virtual Machine (JVM). This feature makes Java portable across different operating systems.</p>
+      <p>Java is strongly typed, supports object-oriented programming, and provides automatic memory management through garbage collection. It also includes exception handling, multithreading, and a rich standard library that helps developers create reliable applications.</p>
+
+      <h3>7. Features of Java</h3>
+      <p>Java provides several features that make it useful for software development. These features help programmers write organized, portable, and maintainable code.</p>
+      <ul>
+        <li><b>Simple:</b> Java has a clear syntax influenced by C and C++. It avoids certain complex features, such as direct pointer manipulation, making many programming tasks easier to manage.</li>
+        <li><b>Object-Oriented:</b> Java organizes programs using classes and objects. It supports encapsulation, inheritance, polymorphism, and abstraction.</li>
+        <li><b>Platform Independent:</b> Java source code is compiled into bytecode that can run on compatible JVM implementations.</li>
+        <li><b>Secure:</b> Java provides features such as bytecode verification, access controls, and runtime checks to help build secure applications.</li>
+        <li><b>Robust:</b> Exception handling, type checking, and automatic memory management help reduce common programming errors.</li>
+        <li><b>Multithreaded:</b> Java allows multiple threads to execute concurrently, which is useful for responsive applications.</li>
+        <li><b>Portable:</b> Java's standard data types and bytecode execution model help programs behave consistently across supported platforms.</li>
+        <li><b>High Performance:</b> Just-in-time compilation can convert frequently executed bytecode into native machine instructions.</li>
+      </ul>
+
+      <h3>8. JVM, JRE, and JDK</h3>
+      <p>The JVM, JRE, and JDK are important components of the Java ecosystem. Understanding their differences helps explain how Java programs are developed and executed.</p>
+      <p><b>JVM (Java Virtual Machine):</b> The JVM executes Java bytecode. It manages runtime operations, memory, and garbage collection. A compatible JVM allows the same bytecode to run on different operating systems.</p>
+      <p><b>JRE (Java Runtime Environment):</b> Traditionally, the JRE refers to the runtime components required to run Java applications, including the JVM and supporting libraries. Modern Java distributions may package these components differently.</p>
+      <p><b>JDK (Java Development Kit):</b> The JDK provides tools needed to develop Java programs, including the Java compiler, launcher, and other development utilities.</p>
+      <p>The basic process is: a programmer writes source code in a .java file, the compiler converts it into bytecode in a .class file, and the JVM executes that bytecode.</p>
+
+      <h3>9. Variables and Data Types in Java</h3>
+      <p>A variable is a named storage location used to hold data while a program is running. Every variable in Java has a declared type, which determines the kind of value it can store and the operations that can be performed on it.</p>
+      <p>Java has eight primitive data types: byte, short, int, long, float, double, char, and boolean. Integer types store whole numbers, floating-point types store decimal values, char represents a UTF-16 code unit, and boolean represents true or false.</p>
+      <p>Reference types include classes, arrays, interfaces, and other object types. A reference variable can refer to an object or have a null value.</p>
+      <pre><code>public class DataTypesExample {
+    public static void main(String[] args) {
+        int age = 20;
+        double percentage = 85.5;
+        char grade = 'A';
+        boolean passed = true;
+        String name = "Astha";
+
+        System.out.println(name);
+        System.out.println(age);
+        System.out.println(percentage);
+        System.out.println(grade);
+        System.out.println(passed);
+    }
+}</code></pre>
+      <p>In this example, different variables store different types of information. Selecting suitable data types improves clarity and helps prevent invalid operations.</p>
+
+      <h3>10. Classes and Objects in Java</h3>
+      <p>A class is a blueprint that defines the data and behavior of a particular type of object. It can contain fields, constructors, methods, and nested types. An object is an instance of a class and represents an entity with its own state and behavior.</p>
+      <p>For example, a Student class may contain fields such as name and rollNumber, along with methods that display student information. Multiple Student objects can be created from the same class, with each object storing different values.</p>
+      <pre><code>class Student {
+    String name;
+    int rollNumber;
+
+    void display() {
+        System.out.println(name);
+        System.out.println(rollNumber);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Student s1 = new Student();
+        s1.name = "Astha";
+        s1.rollNumber = 101;
+        s1.display();
+    }
+}</code></pre>
+      <p>Here, Student is the class and s1 is an object. The fields store the student's information, while display() defines an action. Classes and objects help organize programs into logical units.</p>
+
+      <h3>11. Constructors in Java</h3>
+      <p>A constructor is a special class member used to initialize a newly created object. It has the same name as the class and does not declare a return type. A constructor is called when an object is created using the new keyword.</p>
+      <p>A no-argument constructor takes no parameters. A parameterized constructor accepts values that can be used to initialize fields. Constructors can be overloaded by defining multiple constructors with different parameter lists.</p>
+      <pre><code>class Student {
+    String name;
+    int age;
+
+    Student(String studentName, int studentAge) {
+        name = studentName;
+        age = studentAge;
+    }
+
+    void display() {
+        System.out.println(name + " " + age);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Student s1 = new Student("Astha", 20);
+        s1.display();
+    }
+}</code></pre>
+      <p>In this example, the constructor receives a name and age and assigns them to the object's fields. Constructors help ensure that objects begin with meaningful initial values.</p>
+
+      <h3>12. Inheritance in Java</h3>
+      <p>Inheritance is an object-oriented programming concept in which one class derives accessible fields and methods from another class. The existing class is called the superclass or parent class, while the derived class is called the subclass or child class.</p>
+      <p>Java uses the extends keyword for class inheritance. Inheritance supports code reuse and allows subclasses to provide specialized behavior. Java classes support single inheritance of classes, while a class can implement multiple interfaces.</p>
+      <pre><code>class Animal {
+    void eat() {
+        System.out.println("Animal is eating");
+    }
+}
+
+class Dog extends Animal {
+    void bark() {
+        System.out.println("Dog is barking");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog d = new Dog();
+        d.eat();
+        d.bark();
+    }
+}</code></pre>
+      <p>The Dog class inherits the eat() method from Animal and also defines its own bark() method. This allows related classes to share common functionality without repeating the same code.</p>
+
+      <h3>13. Polymorphism in Java</h3>
+      <p>Polymorphism means "many forms." It allows the same method name or interface to represent different behaviors in different situations. Polymorphism helps make software flexible and easier to extend.</p>
+      <p>Compile-time polymorphism is commonly achieved through method overloading, where methods have the same name but different parameter lists. Runtime polymorphism occurs through method overriding, where a subclass provides its own implementation of an inherited method.</p>
+      <pre><code>class Animal {
+    void sound() {
+        System.out.println("Animal makes a sound");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    void sound() {
+        System.out.println("Dog barks");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Animal a = new Dog();
+        a.sound();
+    }
+}</code></pre>
+      <p>Although the reference variable is of type Animal, the overridden method in Dog executes at runtime. This is an example of runtime polymorphism.</p>
+
+      <h3>14. Encapsulation and Abstraction</h3>
+      <p><b>Encapsulation</b> means combining data and related methods within a class and controlling access to the internal state. In Java, private fields and public methods are often used to protect data and provide controlled access.</p>
+      <p><b>Abstraction</b> means showing essential features while hiding unnecessary implementation details. Java supports abstraction through abstract classes and interfaces. These concepts help reduce complexity and improve software design.</p>
+      <pre><code>class BankAccount {
+    private double balance;
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+        }
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount();
+        account.deposit(1000);
+        System.out.println(account.getBalance());
+    }
+}</code></pre>
+      <p>The balance field is private, so other classes cannot directly change it. The deposit() method controls how money is added, while getBalance() provides access to the current balance. This demonstrates basic encapsulation.</p>
+
+      <h3>15. Interfaces in Java</h3>
+      <p>An interface defines a contract that implementing classes agree to follow. Interfaces are useful when different classes need to provide the same set of behaviors, even if those classes are otherwise unrelated.</p>
+      <p>A class uses the implements keyword to implement an interface. Interfaces can declare abstract methods and may also contain default, static, and private methods under Java's interface rules.</p>
+      <pre><code>interface Printable {
+    void print();
+}
+
+class Document implements Printable {
+    public void print() {
+        System.out.println("Printing document");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Printable p = new Document();
+        p.print();
+    }
+}</code></pre>
+      <p>Here, Printable declares the print() behavior and Document provides its implementation. Interfaces help reduce dependency on specific classes and support flexible program design.</p>
+
+      <h3>16. Exception Handling in Java</h3>
+      <p>An exception is an event that interrupts the normal flow of a program. Exceptions can occur because of invalid input, unavailable files, arithmetic problems, or other runtime conditions. Java provides exception-handling mechanisms to respond to these situations in a controlled way.</p>
+      <p>The try block contains code that may produce an exception. The catch block handles a matching exception, and the finally block is used for cleanup code that should generally run whether or not an exception occurs. The throw keyword explicitly throws an exception, while throws declares possible exceptions in a method signature.</p>
+      <pre><code>public class Main {
+    public static void main(String[] args) {
+        try {
+            int result = 10 / 0;
+            System.out.println(result);
+        } catch (ArithmeticException e) {
+            System.out.println("Cannot divide by zero");
+        } finally {
+            System.out.println("Program completed");
+        }
+    }
+}</code></pre>
+      <p>In this example, dividing by zero causes an ArithmeticException. The catch block displays a helpful message instead of allowing the exception to remain unhandled. Exception handling improves reliability and makes error management clearer.</p>
+
+      <h3>17. Multithreading in Java</h3>
+      <p>Multithreading is the ability of a program to execute multiple threads concurrently. A thread is a path of execution within a process. Multithreading is useful for tasks such as background processing, responsive user interfaces, and handling multiple activities.</p>
+      <p>Java supports thread creation using the Thread class and the Runnable interface. The start() method requests that a new thread begin execution; the JVM then invokes its run() method. Shared data must be managed carefully because multiple threads may access it at the same time.</p>
+      <pre><code>class MyTask extends Thread {
+    public void run() {
+        System.out.println("Thread is running");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        MyTask t = new MyTask();
+        t.start();
+    }
+}</code></pre>
+      <p>This example creates a custom thread and starts it. The message is printed by the new thread. Multithreading can improve responsiveness, but correct synchronization is important when threads share mutable data.</p>
+
+      <h3>18. Collections Framework in Java</h3>
+      <p>The Java Collections Framework provides interfaces and classes for storing and processing groups of objects. It includes structures such as List, Set, Queue, and Map, along with implementations such as ArrayList, HashSet, and HashMap.</p>
+      <p>A List preserves element order and can contain duplicates. A Set is designed to store unique elements. A Queue supports processing elements according to a queue's ordering rules. A Map stores key-value pairs and is not a subtype of Collection.</p>
+      <pre><code>import java.util.ArrayList;
+
+public class Main {
+    public static void main(String[] args) {
+        ArrayList<String> courses = new ArrayList<>();
+        courses.add("C");
+        courses.add("Python");
+        courses.add("Java");
+
+        for (String course : courses) {
+            System.out.println(course);
+        }
+    }
+}</code></pre>
+      <p>ArrayList stores the course names and allows elements to be added dynamically. Collections reduce the need to implement common data structures from scratch and provide useful methods for working with data.</p>
+
+      <h3>19. JDBC and Database Connectivity</h3>
+      <p>JDBC stands for Java Database Connectivity. It is a Java API used to connect Java applications to relational databases, execute SQL statements, and process query results. JDBC is commonly used in applications that store information such as student records, course details, and examination results.</p>
+      <p>A typical JDBC workflow involves obtaining a database connection, preparing a SQL statement, executing the statement, processing the results when available, and closing resources. Database drivers enable communication between Java applications and supported database systems.</p>
+      <p>PreparedStatement is often preferred for parameterized SQL queries because it separates SQL structure from input values and helps protect against SQL injection when used correctly.</p>
+      <ul>
+        <li>Load or make available the appropriate JDBC driver.</li>
+        <li>Obtain a connection using the database URL and suitable credentials.</li>
+        <li>Create a Statement or PreparedStatement.</li>
+        <li>Execute a query or update.</li>
+        <li>Process the returned ResultSet, if any.</li>
+        <li>Close database resources, preferably using try-with-resources.</li>
+      </ul>
+      <p>For example, a Learning Management System could use JDBC to retrieve course details or save student marks in a database. Database credentials should be stored securely and should not be exposed in client-side code.</p>
+
+      <h3>20. Java Applications and Advantages</h3>
+      <p>Java is used in many areas of software development because it offers portability, a large ecosystem, object-oriented design, and mature development tools. It is suitable for applications that need maintainable code and support for different environments.</p>
+      <ul>
+        <li><b>Web and enterprise applications:</b> Java frameworks can be used to develop server-side services, APIs, and business applications.</li>
+        <li><b>Desktop applications:</b> Java supports graphical interfaces through technologies such as Swing and JavaFX.</li>
+        <li><b>Android development:</b> Java is used in many Android codebases, although Android development also supports Kotlin and other tools.</li>
+        <li><b>Database applications:</b> JDBC allows Java programs to communicate with supported relational databases.</li>
+        <li><b>Scientific and business software:</b> Java libraries support data processing, reporting, and complex business logic.</li>
+        <li><b>Concurrency:</b> Threading and concurrency utilities help applications perform multiple tasks.</li>
+      </ul>
+       </div>
+  </div>
+
+  <!-- WEB TECHNOLOGY -->
+  <div class="module-header" onclick="toggleModule('notes-web')">
+    📄 Web Technology Notes <span>▼</span>
+  </div>
+  <div id="notes-web" class="module-content">
+    <div class="note-box">
+      <h4>📄 Web Technology Notes</h4>
+
+      <b>1. HTML5</b>
+      <p>HTML defines the structure of a web page. Semantic elements describe the meaning of content.</p>
+      <pre>&lt;header&gt;LearnHub LMS&lt;/header&gt;
+&lt;nav&gt;Navigation&lt;/nav&gt;
+&lt;main&gt;
+    &lt;section&gt;
+        &lt;h2&gt;Courses&lt;/h2&gt;
+        &lt;p&gt;Explore courses.&lt;/p&gt;
+    &lt;/section&gt;
+&lt;/main&gt;
+&lt;footer&gt;LearnHub&lt;/footer&gt;</pre>
+
+      <b>2. CSS Flexbox and Grid</b>
+      <p>Flexbox arranges items in a row or column. Grid arranges items in rows and columns.</p>
+      <pre>/* Flexbox */
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Grid */
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}</pre>
+
+      <b>3. JavaScript Form Validation</b>
+      <p>JavaScript can check user input before submitting a form.</p>
+      <pre>function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+console.log(validateEmail("student@example.com"));</pre>
+
+      <b>4. Local Storage vs Session Storage</b>
+      <ul>
+        <li><b>Local Storage:</b> Data remains available across browser sessions until removed.</li>
+        <li><b>Session Storage:</b> Data generally remains for the current tab session.</li>
+      </ul>
+      <pre>localStorage.setItem("course", "Python");
+console.log(localStorage.getItem("course"));
+
+sessionStorage.setItem("page", "Dashboard");
+console.log(sessionStorage.getItem("page"));</pre>
+
+      <b>5. Fetch API</b>
+      <p>The Fetch API makes HTTP requests to a server and processes responses asynchronously.</p>
+      <pre>fetch("https://jsonplaceholder.typicode.com/posts/1")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Request failed");
+        }
+        return response.json();
+    })
+    .then(data => console.log(data))
+    .catch(error => console.error(error));</pre>
+
+      <b>6. Responsive Web Design</b>
+      <p>Responsive design adapts a web page to different screen sizes using flexible layouts and media queries.</p>
+      <pre>@media (max-width: 700px) {
+    .container {
+        display: block;
+    }
+}</pre>
+
+      <h3>7. Introduction to Web Technology</h3>
+      <p>Web Technology refers to the tools, programming languages, standards, and techniques used to create, access, and maintain websites and web applications. It allows users to access information, communicate with other people, purchase products, attend online classes, and use many services through the internet.</p>
+      <p>A website is generally a collection of related web pages available under a domain name. A web application is an interactive application accessed through a browser. Examples include online learning platforms, email services, online banking systems, and student management portals.</p>
+      <p>Web technology commonly includes HTML for page structure, CSS for presentation, JavaScript for interaction, web servers for delivering content, and databases for storing information. These technologies work together to create websites that are useful, interactive, and accessible.</p>
+
+      <h3>8. HTML and Its Importance</h3>
+      <p>HTML stands for HyperText Markup Language. It is the standard markup language used to define the structure and content of web pages. HTML is not a programming language because it primarily describes content and its meaning rather than implementing general-purpose programming logic.</p>
+      <p>HTML uses elements represented by tags. Common elements include headings, paragraphs, links, images, lists, tables, forms, and sections. Most elements use an opening tag and a closing tag, while some elements, such as img and input, do not require closing tags.</p>
+      <p>HTML attributes provide additional information about elements. For example, the href attribute specifies a link destination, the src attribute specifies an image source, and the alt attribute provides alternative text for an image.</p>
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;My Website&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Welcome to LearnHub&lt;/h1&gt;
+    &lt;p&gt;Learn web development online.&lt;/p&gt;
+    &lt;a href="https://example.com"&gt;Visit Website&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>The DOCTYPE declaration identifies the document as HTML5. The head section contains metadata and the page title, while the body contains the content displayed to users. HTML provides the foundation on which CSS and JavaScript can add styling and behavior.</p>
+
+      <h3>9. Semantic HTML5 Elements</h3>
+      <p>Semantic HTML elements describe the meaning and purpose of the content they contain. HTML5 introduced several semantic elements that help organize web pages in a clear and meaningful way.</p>
+      <ul>
+        <li><b>header:</b> Contains introductory content, a site title, or a page heading.</li>
+        <li><b>nav:</b> Contains major navigation links.</li>
+        <li><b>main:</b> Represents the primary content of the page.</li>
+        <li><b>section:</b> Groups related content under a common topic.</li>
+        <li><b>article:</b> Represents independent content, such as a blog post.</li>
+        <li><b>aside:</b> Contains related or supplementary information.</li>
+        <li><b>footer:</b> Contains closing information, copyright details, or related links.</li>
+      </ul>
+      <pre><code>&lt;header&gt;
+    &lt;h1&gt;LearnHub&lt;/h1&gt;
+&lt;/header&gt;
+
+&lt;nav&gt;
+    &lt;a href="#courses"&gt;Courses&lt;/a&gt;
+    &lt;a href="#about"&gt;About&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;main&gt;
+    &lt;section id="courses"&gt;
+        &lt;h2&gt;Our Courses&lt;/h2&gt;
+        &lt;p&gt;Learn programming skills.&lt;/p&gt;
+    &lt;/section&gt;
+&lt;/main&gt;
+
+&lt;footer&gt;LearnHub Learning Portal&lt;/footer&gt;</code></pre>
+      <p>Semantic elements make HTML easier to read and maintain. They can also help assistive technologies understand the page structure and help search engines interpret the content. They do not automatically make a website accessible; appropriate headings, labels, keyboard support, and other accessibility practices are still important.</p>
+
+      <h3>10. CSS and Web Page Styling</h3>
+      <p>CSS stands for Cascading Style Sheets. It is used to control the appearance and layout of HTML elements. CSS can define colors, fonts, spacing, borders, backgrounds, alignment, animations, and responsive layouts.</p>
+      <p>CSS rules contain selectors and declarations. A selector identifies which HTML elements should be styled, while declarations specify properties and values. CSS can be written inline, inside a style element, or in an external stylesheet. External stylesheets are useful for maintaining consistent designs across multiple pages.</p>
+      <pre><code>body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+}
+
+h1 {
+    color: #4f46e5;
+    text-align: center;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}</code></pre>
+      <p>In this example, the body receives a background and font, the heading is centered and colored, and the card class adds spacing and rounded corners. CSS helps separate presentation from document structure, making the website easier to update.</p>
+
+      <h3>11. CSS Box Model</h3>
+      <p>The CSS box model explains how the browser calculates the space occupied by an element. Every element can be understood as a rectangular box made up of content, padding, border, and margin.</p>
+      <ul>
+        <li><b>Content:</b> The text, image, or other content inside an element.</li>
+        <li><b>Padding:</b> The space between the content and the border.</li>
+        <li><b>Border:</b> The line surrounding the content and padding.</li>
+        <li><b>Margin:</b> The space outside the border that separates an element from others.</li>
+      </ul>
+      <pre><code>.card {
+    width: 250px;
+    padding: 20px;
+    border: 2px solid #4f46e5;
+    margin: 15px;
+    box-sizing: border-box;
+}</code></pre>
+      <p>The box-sizing property affects how the declared width and height are calculated. With border-box, the declared width includes the content, padding, and border. Understanding the box model helps prevent unexpected spacing and alignment problems in web layouts.</p>
+
+      <h3>12. CSS Flexbox and Grid</h3>
+      <p>Flexbox and CSS Grid are modern CSS layout systems used to arrange elements on a page. They help developers create structured layouts without relying on complicated positioning techniques.</p>
+      <p><b>Flexbox</b> is mainly designed for arranging items in one dimension, either a row or a column. It provides properties such as display: flex, justify-content, align-items, flex-wrap, and gap. Flexbox is useful for navigation bars, toolbars, and aligning items inside cards.</p>
+      <pre><code>.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}</code></pre>
+      <p><b>CSS Grid</b> is designed for two-dimensional layouts involving rows and columns. It provides properties such as grid-template-columns, grid-template-rows, gap, and grid-column. Grid is useful for dashboards, image galleries, course cards, and complex page layouts.</p>
+      <pre><code>.course-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}</code></pre>
+      <p>Flexbox and Grid can be used together. Grid can define the main page layout, while Flexbox can align items inside individual components. The appropriate layout system depends on the design requirements.</p>
+
+      <h3>13. JavaScript and Dynamic Websites</h3>
+      <p>JavaScript is a programming language that adds behavior and interactivity to websites. While HTML provides the structure and CSS provides the appearance, JavaScript can respond to user actions, validate forms, update page content, calculate results, and communicate with web services.</p>
+      <p>JavaScript supports variables, data types, operators, conditional statements, loops, functions, arrays, objects, and event handling. It can run in web browsers and also in server-side environments such as Node.js.</p>
+      <pre><code>function greetUser(name) {
+    return "Welcome, " + name + "!";
+}
+
+const message = greetUser("Astha");
+document.getElementById("result").textContent = message;</code></pre>
+      <p>This example defines a function, passes a name to it, and displays the returned message inside an HTML element with the ID result. JavaScript can also update styles, show or hide sections, and react to clicks without reloading the entire page.</p>
+
+      <h3>14. DOM Manipulation</h3>
+      <p>DOM stands for Document Object Model. When a browser loads an HTML document, it represents the page as a tree of objects called nodes. JavaScript can access this tree to read, add, remove, or modify elements and their content.</p>
+      <p>Common DOM methods include getElementById(), querySelector(), querySelectorAll(), createElement(), and appendChild(). Properties such as textContent and classList allow scripts to update text and CSS classes.</p>
+      <pre><code>&lt;p id="message"&gt;Original text&lt;/p&gt;
+&lt;button id="changeBtn"&gt;Change Text&lt;/button&gt;
+
+&lt;script&gt;
+document.getElementById("changeBtn").addEventListener("click", function() {
+    document.getElementById("message").textContent =
+        "Welcome to LearnHub!";
+});
+&lt;/script&gt;</code></pre>
+      <p>When the button is clicked, JavaScript finds the paragraph and changes its text. DOM manipulation is useful for interactive dashboards, expandable notes, menus, form feedback, and dynamically updated course lists.</p>
+
+      <h3>15. JavaScript Events and Form Validation</h3>
+      <p>An event is an action or occurrence that a browser can detect. Examples include clicking a button, typing into a field, submitting a form, loading a page, or changing a selected value. JavaScript event handlers allow a website to respond to these actions.</p>
+      <p>Form validation checks whether submitted information follows the expected rules. For example, a registration form may require a name, a valid email address, and a password of sufficient length. HTML attributes such as required, type="email", and minlength can provide basic browser validation, while JavaScript can implement additional checks.</p>
+      <pre><code>&lt;form id="loginForm"&gt;
+    &lt;input id="email" type="email"
+           placeholder="Enter email" required&gt;
+    &lt;button type="submit"&gt;Login&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value;
+
+    if (email.trim() === "") {
+        alert("Please enter your email");
+    } else {
+        alert("Form submitted for validation");
+    }
+});
+&lt;/script&gt;</code></pre>
+      <p>The preventDefault() method stops the form's normal submission so the script can perform its own checks. Client-side validation improves usability, but it is not a substitute for server-side validation because users can bypass browser checks.</p>
+
+      <h3>16. Responsive Web Design</h3>
+      <p>Responsive Web Design is an approach in which a website adjusts its layout and content to different screen sizes and devices. A responsive page should remain usable on mobile phones, tablets, laptops, and desktop computers.</p>
+      <p>Responsive design commonly uses flexible layouts, relative units, responsive images, and CSS media queries. The viewport meta tag helps mobile browsers display pages at the device's actual width instead of using a wider virtual layout.</p>
+      <pre><code>&lt;meta name="viewport"
+      content="width=device-width, initial-scale=1.0"&gt;
+
+&lt;style&gt;
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .course-grid {
+        grid-template-columns: 1fr;
+    }
+}
+&lt;/style&gt;</code></pre>
+      <p>In this example, the course grid displays three columns on wider screens and one column when the viewport is 768 pixels wide or narrower. Responsive layouts improve readability, navigation, and usability across devices.</p>
+
+      <h3>17. Web Browsers and Web Servers</h3>
+      <p>A web browser is software used to request, retrieve, and display web content. Examples include Google Chrome, Mozilla Firefox, Microsoft Edge, and Safari. A browser interprets HTML, CSS, and JavaScript to render an interactive page for the user.</p>
+      <p>A web server is a system or software that receives HTTP requests and sends responses. The response may contain an HTML page, an image, a stylesheet, JavaScript, or data in a format such as JSON. Web servers can also forward requests to application code that accesses databases or performs business logic.</p>
+      <p>For example, when a student opens an online learning website, the browser sends a request to the server. The server returns the requested page or data, and the browser renders the content. Some content may be generated dynamically based on the user's account or selected course.</p>
+
+      <h3>18. HTTP and HTTPS</h3>
+      <p>HTTP stands for HyperText Transfer Protocol. It defines how web clients and servers exchange requests and responses. A request may ask for a page, submit form information, or retrieve data from an API. A response contains a status code and may include the requested content.</p>
+      <p>HTTPS is HTTP protected by TLS encryption. It helps protect data while it travels between a browser and a server, verifies the server's identity through its certificate, and helps detect unauthorized changes to transmitted data.</p>
+      <p>Common HTTP methods include GET for retrieving information, POST for submitting data, PUT or PATCH for updating resources, and DELETE for requesting resource removal. Common status codes include 200 for success, 404 for a resource not found, and 500 for a server error.</p>
+      <p>Websites that handle login details, personal information, or payments should use HTTPS. However, HTTPS alone does not guarantee that a website is trustworthy or that its application is free from security vulnerabilities.</p>
+
+      <h3>19. Client-Side and Server-Side Development</h3>
+      <p>Client-side development refers to code that runs in the user's browser. HTML, CSS, and browser JavaScript are commonly used to build the interface, respond to interactions, and display data. Client-side code can improve responsiveness because some actions can happen without a full page reload.</p>
+      <p>Server-side development refers to code that runs on a server. It can authenticate users, apply business rules, validate submitted data, communicate with databases, and return pages or API responses. Common server-side technologies include Python, Java, PHP, JavaScript with Node.js, and others.</p>
+      <p>For an online learning management system, the client side may display courses and notes, while the server side verifies a user's account, stores course progress, and retrieves saved information from a database. Many modern applications combine both approaches.</p>
+      <p>Security-sensitive logic and access checks must be enforced on the server. Hiding a button in the browser does not prevent a user from attempting the underlying action directly.</p>
+
+      <h3>20. Web APIs and Fetch API</h3>
+      <p>An API, or Application Programming Interface, defines how different software components communicate. A web API allows a browser or another application to request data or perform operations on a server. APIs often exchange data in JSON format.</p>
+      <p>The Fetch API is a browser feature used to make HTTP requests from JavaScript. It returns a Promise, allowing the program to handle responses asynchronously. Developers commonly check whether a response was successful, convert JSON response data, and handle errors.</p>
+      <pre><code>fetch("https://jsonplaceholder.typicode.com/posts/1")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Request failed");
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.title);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });</code></pre>
+      <p>This example requests a sample post, checks the response, converts it into a JavaScript object, and prints its title. Real applications should handle network failures, loading states, permissions, and invalid responses appropriately.</p>
+
+      <h3>21. Local Storage and Session Storage</h3>
+      <p>Web Storage allows a browser to store small amounts of key-value data for a website. Local Storage generally keeps data until it is removed, while Session Storage is associated with a particular browser tab session and is normally cleared when that session ends.</p>
+      <p>Both APIs store values as strings. Objects can be converted to JSON before saving and parsed when retrieved. These storage mechanisms are useful for preferences, temporary interface state, and simple client-side settings.</p>
+      <pre><code>localStorage.setItem("theme", "dark");
+
+const selectedTheme = localStorage.getItem("theme");
+console.log(selectedTheme);
+
+sessionStorage.setItem("currentCourse", "Python");
+
+const course = sessionStorage.getItem("currentCourse");
+console.log(course);</code></pre>
+      <p>Local Storage and Session Storage are not secure databases and should not be used to store passwords or sensitive secrets. Client-side data can be read or modified by scripts running on the same origin, so applications must consider security and privacy carefully.</p>
+
+      <h3>22. Website Security Basics</h3>
+      <p>Website security involves protecting users, data, and services against unauthorized access and malicious activity. Security is important for websites that process login information, student records, payments, or personal details.</p>
+      <ul>
+        <li><b>HTTPS:</b> Protects information transmitted between the browser and server using TLS.</li>
+        <li><b>Authentication:</b> Verifies a user's identity, commonly through a login system.</li>
+        <li><b>Authorization:</b> Determines which resources and actions an authenticated user is allowed to access.</li>
+        <li><b>Input validation:</b> Checks submitted information for expected types, formats, and limits.</li>
+        <li><b>Output encoding:</b> Helps prevent untrusted content from being interpreted as executable HTML or script.</li>
+        <li><b>Secure password storage:</b> Passwords should be stored using appropriate password-hashing methods rather than plain text.</li>
+        <li><b>Access control:</b> Sensitive actions and data must be protected by server-side permission checks.</li>
+      </ul>
+      <p>Security requires multiple layers of protection. Developers should keep software updated, handle errors carefully, limit access to sensitive information, and test their applications for common vulnerabilities.</p>
+
+      <h3>23. Accessibility in Web Development</h3>
+      <p>Web accessibility means designing websites so that people with different abilities can use them. This includes users who rely on keyboards, screen readers, magnification, captions, or other assistive technologies.</p>
+      <p>Accessible websites use meaningful headings, labels for form controls, alternative text for informative images, readable color contrast, and clear navigation. Interactive components should support keyboard use and provide understandable focus indicators.</p>
+      <pre><code>&lt;label for="studentEmail"&gt;Email Address&lt;/label&gt;
+&lt;input
+    type="email"
+    id="studentEmail"
+    name="email"
+    required
+&gt;
+
+&lt;img src="course.jpg"
+     alt="Students learning in a classroom"&gt;</code></pre>
+      <p>The label connects the text to the email input, and the alt attribute provides a text alternative for the image. Accessibility benefits many users and improves the overall usability of a website.</p>
+
+      <h3>24. Advantages and Applications of Web Technology</h3>
+      <p>Web technology has transformed how people access information, communicate, learn, and conduct business. Websites and web applications can be accessed from different devices through a browser, reducing the need to install separate applications for every platform.</p>
+      <ul>
+        <li><b>Education:</b> Learning management systems provide online courses, notes, assignments, quizzes, and progress tracking.</li>
+        <li><b>Business:</b> Companies use web applications for customer service, inventory, sales, and internal operations.</li>
+        <li><b>Communication:</b> Web technologies support email, messaging, video meetings, and collaboration tools.</li>
+        <li><b>E-commerce:</b> Online stores display products, manage shopping carts, and process orders.</li>
+        <li><b>Healthcare:</b> Web applications can support appointment scheduling and access to authorized information.</li>
+        <li><b>Government services:</b> Websites allow users to access forms, information, and digital services.</li>
+        <li><b>Entertainment:</b> Streaming services, online games, and digital media platforms use web technologies.</li>
+      </ul>
+      <p>Web technology makes information sharing and service delivery more convenient. Successful web applications still require reliable hosting, good performance, accessibility, security, maintenance, and a user-friendly design.</p>
+
+    </div>
+  </div>
+</section>
+
+
+      <!-- ASSIGNMENTS -->
+      <section id="assignments" class="card section">
+        <h3>📝 3. Assignments - Click to Open Module</h3>
+
+        <div class="module-header" onclick="toggleModule('c-mod')">
+          📁 Assignment 1: C Programming ▼
+        </div>
+        <div id="c-mod" class="module-content">
+          <div class="q-box">Q1. Write a C program to manage student records in LMS using structures. Store student_id, name and enrolled courses.</div>
+          <div class="q-box">Q2. Explain pointers with example. Write a C program to swap course titles using pointers.</div>
+          <div class="q-box">Q3. Write a program to implement file handling in C for storing and retrieving assignment submissions.</div>
+          <div class="q-box">Q4. What is dynamic memory allocation? Demonstrate malloc() and free() with an LMS example.</div>
+          <div class="q-box">Q5. Write a C program to sort courses by course_id using bubble sort.</div>
+        </div>
+
+        <div class="module-header" onclick="toggleModule('py-mod')">
+          📁 Assignment 2: Python Programming ▼
+        </div>
+        <div id="py-mod" class="module-content">
+          <div class="q-box">Q1. Create a Python class LMS with attributes student, course and instructor. Add enroll(), submit_assignment() and display_info() methods.</div>
+          <div class="q-box">Q2. Explain list, tuple and dictionary with LMS examples. Write a program to store and search course materials using a dictionary.</div>
+          <div class="q-box">Q3. Write a Python program using file handling to save and read student login data from a text file.</div>
+          <div class="q-box">Q4. What is exception handling? Write a program to handle invalid input using try-except.</div>
+          <div class="q-box">Q5. Explain how Python Flask/Django can be used as the backend for an Online Learning Management System.</div>
+        </div>
+
+        <div class="module-header" onclick="toggleModule('java-mod')">
+          📁 Assignment 3: Java Programming ▼
+        </div>
+        <div id="java-mod" class="module-content">
+          <div class="q-box">Q1. Explain OOP concepts: Inheritance, Polymorphism, Encapsulation and Abstraction with LMS examples.</div>
+          <div class="q-box">Q2. Write a Java program to create a Course class with constructor overloading.</div>
+          <div class="q-box">Q3. Implement multithreading in Java to handle multiple tasks in an LMS.</div>
+          <div class="q-box">Q4. What is JDBC? Explain the steps to connect an LMS with a MySQL database.</div>
+          <div class="q-box">Q5. Design an LMS login page interface using Swing/AWT.</div>
+        </div>
+
+        <div class="module-header" onclick="toggleModule('web-mod')">
+          📁 Assignment 4: Web Technology ▼
+        </div>
+        <div id="web-mod" class="module-content">
+          <div class="q-box">Q1. Design the homepage of an Online Learning Management System using HTML5 and CSS3.</div>
+          <div class="q-box">Q2. Write JavaScript code for form validation on a student registration page.</div>
+          <div class="q-box">Q3. Explain session storage and local storage with JavaScript examples.</div>
+          <div class="q-box">Q4. Create a responsive course dashboard using CSS Flexbox/Grid.</div>
+          <div class="q-box">Q5. Explain how frontend HTML/CSS/JavaScript communicates with a backend using the Fetch API.</div>
+        </div>
+      </section>
+
+
+ 
+<!-- QUIZZES -->
+<section id="quizzes" class="card section">
+  <h3>🧠 4. Quiz Section</h3>
+
+  <!-- C Programming Quiz -->
+  <div class="module-header" onclick="toggleModule('quiz-c')" style="border-color:#ffd166">
+    🎯 Quiz 1: C Programming ▼
+  </div>
+
+  <div id="quiz-c" class="module-content">
+    <div class="quiz-q">
+      <b>Q1. What is a structure in C?</b><br>
+      <label><input type="radio" name="c1" value="a" style="width:auto"> A) Loop statement</label><br>
+      <label><input type="radio" name="c1" value="b" style="width:auto"> B) User-defined data type</label><br>
+      <label><input type="radio" name="c1" value="c" style="width:auto"> C) Operator</label><br>
+      <label><input type="radio" name="c1" value="d" style="width:auto"> D) Header file</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q2. Which header file contains malloc()?</b><br>
+      <label><input type="radio" name="c2" value="a" style="width:auto"> A) stdlib.h</label><br>
+      <label><input type="radio" name="c2" value="b" style="width:auto"> B) stdio.h</label><br>
+      <label><input type="radio" name="c2" value="c" style="width:auto"> C) string.h</label><br>
+      <label><input type="radio" name="c2" value="d" style="width:auto"> D) math.h</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q3. Which symbol ends a C statement?</b><br>
+      <label><input type="radio" name="c3" value="a" style="width:auto"> A) :</label><br>
+      <label><input type="radio" name="c3" value="b" style="width:auto"> B) ;</label><br>
+      <label><input type="radio" name="c3" value="c" style="width:auto"> C) ,</label><br>
+      <label><input type="radio" name="c3" value="d" style="width:auto"> D) .</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q4. Which function is the usual entry point in C?</b><br>
+      <label><input type="radio" name="c4" value="a" style="width:auto"> A) main()</label><br>
+      <label><input type="radio" name="c4" value="b" style="width:auto"> B) start()</label><br>
+      <label><input type="radio" name="c4" value="c" style="width:auto"> C) run()</label><br>
+      <label><input type="radio" name="c4" value="d" style="width:auto"> D) begin()</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q5. Which format specifier is used for an int?</b><br>
+      <label><input type="radio" name="c5" value="a" style="width:auto"> A) %f</label><br>
+      <label><input type="radio" name="c5" value="b" style="width:auto"> B) %d</label><br>
+      <label><input type="radio" name="c5" value="c" style="width:auto"> C) %c</label><br>
+      <label><input type="radio" name="c5" value="d" style="width:auto"> D) %s</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q6. Which loop checks its condition before execution?</b><br>
+      <label><input type="radio" name="c6" value="a" style="width:auto"> A) while</label><br>
+      <label><input type="radio" name="c6" value="b" style="width:auto"> B) do-while</label><br>
+      <label><input type="radio" name="c6" value="c" style="width:auto"> C) Neither loop</label><br>
+      <label><input type="radio" name="c6" value="d" style="width:auto"> D) Both always execute once</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q7. Which operator gives the remainder?</b><br>
+      <label><input type="radio" name="c7" value="a" style="width:auto"> A) /</label><br>
+      <label><input type="radio" name="c7" value="b" style="width:auto"> B) %</label><br>
+      <label><input type="radio" name="c7" value="c" style="width:auto"> C) *</label><br>
+      <label><input type="radio" name="c7" value="d" style="width:auto"> D) +</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q8. Which keyword returns a value from a function?</b><br>
+      <label><input type="radio" name="c8" value="a" style="width:auto"> A) return</label><br>
+      <label><input type="radio" name="c8" value="b" style="width:auto"> B) break</label><br>
+      <label><input type="radio" name="c8" value="c" style="width:auto"> C) continue</label><br>
+      <label><input type="radio" name="c8" value="d" style="width:auto"> D) goto</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q9. Array indexing in C normally starts at?</b><br>
+      <label><input type="radio" name="c9" value="a" style="width:auto"> A) 1</label><br>
+      <label><input type="radio" name="c9" value="b" style="width:auto"> B) 0</label><br>
+      <label><input type="radio" name="c9" value="c" style="width:auto"> C) -1</label><br>
+      <label><input type="radio" name="c9" value="d" style="width:auto"> D) 2</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q10. Which function displays formatted output?</b><br>
+      <label><input type="radio" name="c10" value="a" style="width:auto"> A) printf()</label><br>
+      <label><input type="radio" name="c10" value="b" style="width:auto"> B) scanf()</label><br>
+      <label><input type="radio" name="c10" value="c" style="width:auto"> C) strlen()</label><br>
+      <label><input type="radio" name="c10" value="d" style="width:auto"> D) fopen()</label>
+    </div>
+    <button onclick="checkQuiz('quiz-c','result-c',{c1:'b',c2:'a',c3:'b',c4:'a',c5:'b',c6:'a',c7:'b',c8:'a',c9:'b',c10:'a'})">Check Score</button>
+    <p id="result-c"></p>
+  </div>
+
+  <!-- Python Quiz -->
+  <div class="module-header" onclick="toggleModule('quiz-py')" style="border-color:#ffd166">
+    🎯 Quiz 2: Python Programming ▼
+  </div>
+
+  <div id="quiz-py" class="module-content">
+    <div class="quiz-q">
+      <b>Q1. Who created Python?</b><br>
+      <label><input type="radio" name="p1" value="a" style="width:auto"> A) Guido van Rossum</label><br>
+      <label><input type="radio" name="p1" value="b" style="width:auto"> B) James Gosling</label><br>
+      <label><input type="radio" name="p1" value="c" style="width:auto"> C) Dennis Ritchie</label><br>
+      <label><input type="radio" name="p1" value="d" style="width:auto"> D) Bjarne Stroustrup</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q2. Which brackets create a Python list?</b><br>
+      <label><input type="radio" name="p2" value="a" style="width:auto"> A) []</label><br>
+      <label><input type="radio" name="p2" value="b" style="width:auto"> B) {}</label><br>
+      <label><input type="radio" name="p2" value="c" style="width:auto"> C) ()</label><br>
+      <label><input type="radio" name="p2" value="d" style="width:auto"> D) &lt;&gt;</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q3. Which keyword defines a function?</b><br>
+      <label><input type="radio" name="p3" value="a" style="width:auto"> A) function</label><br>
+      <label><input type="radio" name="p3" value="b" style="width:auto"> B) def</label><br>
+      <label><input type="radio" name="p3" value="c" style="width:auto"> C) fun</label><br>
+      <label><input type="radio" name="p3" value="d" style="width:auto"> D) define</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q4. Which symbol starts a comment in Python?</b><br>
+      <label><input type="radio" name="p4" value="a" style="width:auto"> A) #</label><br>
+      <label><input type="radio" name="p4" value="b" style="width:auto"> B) //</label><br>
+      <label><input type="radio" name="p4" value="c" style="width:auto"> C) &lt;!--</label><br>
+      <label><input type="radio" name="p4" value="d" style="width:auto"> D) **</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q5. What is the output of 2 ** 3?</b><br>
+      <label><input type="radio" name="p5" value="a" style="width:auto"> A) 6</label><br>
+      <label><input type="radio" name="p5" value="b" style="width:auto"> B) 8</label><br>
+      <label><input type="radio" name="p5" value="c" style="width:auto"> C) 9</label><br>
+      <label><input type="radio" name="p5" value="d" style="width:auto"> D) 5</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q6. Which data type stores True or False?</b><br>
+      <label><input type="radio" name="p6" value="a" style="width:auto"> A) bool</label><br>
+      <label><input type="radio" name="p6" value="b" style="width:auto"> B) str</label><br>
+      <label><input type="radio" name="p6" value="c" style="width:auto"> C) list</label><br>
+      <label><input type="radio" name="p6" value="d" style="width:auto"> D) dict</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q7. Which method adds an item to the end of a list?</b><br>
+      <label><input type="radio" name="p7" value="a" style="width:auto"> A) add()</label><br>
+      <label><input type="radio" name="p7" value="b" style="width:auto"> B) append()</label><br>
+      <label><input type="radio" name="p7" value="c" style="width:auto"> C) insertEnd()</label><br>
+      <label><input type="radio" name="p7" value="d" style="width:auto"> D) pushBack()</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q8. Which function returns the length of a list?</b><br>
+      <label><input type="radio" name="p8" value="a" style="width:auto"> A) len()</label><br>
+      <label><input type="radio" name="p8" value="b" style="width:auto"> B) size()</label><br>
+      <label><input type="radio" name="p8" value="c" style="width:auto"> C) countAll()</label><br>
+      <label><input type="radio" name="p8" value="d" style="width:auto"> D) length()</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q9. Which keyword is used for a conditional branch?</b><br>
+      <label><input type="radio" name="p9" value="a" style="width:auto"> A) when</label><br>
+      <label><input type="radio" name="p9" value="b" style="width:auto"> B) elif</label><br>
+      <label><input type="radio" name="p9" value="c" style="width:auto"> C) switch</label><br>
+      <label><input type="radio" name="p9" value="d" style="width:auto"> D) caseof</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q10. Which built-in function displays output?</b><br>
+      <label><input type="radio" name="p10" value="a" style="width:auto"> A) print()</label><br>
+      <label><input type="radio" name="p10" value="b" style="width:auto"> B) input()</label><br>
+      <label><input type="radio" name="p10" value="c" style="width:auto"> C) type()</label><br>
+      <label><input type="radio" name="p10" value="d" style="width:auto"> D) range()</label>
+    </div>
+    <button onclick="checkQuiz('quiz-py','result-py',{p1:'a',p2:'a',p3:'b',p4:'a',p5:'b',p6:'a',p7:'b',p8:'a',p9:'b',p10:'a'})">Check Score</button>
+    <p id="result-py"></p>
+  </div>
+
+  <!-- Java Quiz -->
+  <div class="module-header" onclick="toggleModule('quiz-java')" style="border-color:#ffd166">
+    🎯 Quiz 3: Java Programming ▼
+  </div>
+
+  <div id="quiz-java" class="module-content">
+    <div class="quiz-q">
+      <b>Q1. What is the full form of JDBC?</b><br>
+      <label><input type="radio" name="j1" value="a" style="width:auto"> A) Java Database Connectivity</label><br>
+      <label><input type="radio" name="j1" value="b" style="width:auto"> B) Java Data Code</label><br>
+      <label><input type="radio" name="j1" value="c" style="width:auto"> C) Java Design Control</label><br>
+      <label><input type="radio" name="j1" value="d" style="width:auto"> D) Java Debug Compiler</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q2. Which is the correct Java main method declaration?</b><br>
+      <label><input type="radio" name="j2" value="a" style="width:auto"> A) public static void main(String[] args)</label><br>
+      <label><input type="radio" name="j2" value="b" style="width:auto"> B) public void start(String args)</label><br>
+      <label><input type="radio" name="j2" value="c" style="width:auto"> C) static main(String[] args)</label><br>
+      <label><input type="radio" name="j2" value="d" style="width:auto"> D) public int main()</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q3. Which keyword creates an object in Java?</b><br>
+      <label><input type="radio" name="j3" value="a" style="width:auto"> A) class</label><br>
+      <label><input type="radio" name="j3" value="b" style="width:auto"> B) new</label><br>
+      <label><input type="radio" name="j3" value="c" style="width:auto"> C) make</label><br>
+      <label><input type="radio" name="j3" value="d" style="width:auto"> D) create</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q4. Which type stores whole numbers in Java?</b><br>
+      <label><input type="radio" name="j4" value="a" style="width:auto"> A) int</label><br>
+      <label><input type="radio" name="j4" value="b" style="width:auto"> B) boolean</label><br>
+      <label><input type="radio" name="j4" value="c" style="width:auto"> C) char</label><br>
+      <label><input type="radio" name="j4" value="d" style="width:auto"> D) String</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q5. Which keyword is used to inherit a class?</b><br>
+      <label><input type="radio" name="j5" value="a" style="width:auto"> A) implements</label><br>
+      <label><input type="radio" name="j5" value="b" style="width:auto"> B) extends</label><br>
+      <label><input type="radio" name="j5" value="c" style="width:auto"> C) inherits</label><br>
+      <label><input type="radio" name="j5" value="d" style="width:auto"> D) super</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q6. Which collection stores unique elements?</b><br>
+      <label><input type="radio" name="j6" value="a" style="width:auto"> A) HashSet</label><br>
+      <label><input type="radio" name="j6" value="b" style="width:auto"> B) ArrayList</label><br>
+      <label><input type="radio" name="j6" value="c" style="width:auto"> C) LinkedList</label><br>
+      <label><input type="radio" name="j6" value="d" style="width:auto"> D) Vector</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q7. Which block handles an exception?</b><br>
+      <label><input type="radio" name="j7" value="a" style="width:auto"> A) check</label><br>
+      <label><input type="radio" name="j7" value="b" style="width:auto"> B) catch</label><br>
+      <label><input type="radio" name="j7" value="c" style="width:auto"> C) error</label><br>
+      <label><input type="radio" name="j7" value="d" style="width:auto"> D) handle</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q8. Which keyword prevents a class from being subclassed?</b><br>
+      <label><input type="radio" name="j8" value="a" style="width:auto"> A) final</label><br>
+      <label><input type="radio" name="j8" value="b" style="width:auto"> B) static</label><br>
+      <label><input type="radio" name="j8" value="c" style="width:auto"> C) private</label><br>
+      <label><input type="radio" name="j8" value="d" style="width:auto"> D) void</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q9. Which method compares String contents?</b><br>
+      <label><input type="radio" name="j9" value="a" style="width:auto"> A) compareToSize()</label><br>
+      <label><input type="radio" name="j9" value="b" style="width:auto"> B) equals()</label><br>
+      <label><input type="radio" name="j9" value="c" style="width:auto"> C) sameAs()</label><br>
+      <label><input type="radio" name="j9" value="d" style="width:auto"> D) isSame()</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q10. Which keyword declares an interface?</b><br>
+      <label><input type="radio" name="j10" value="a" style="width:auto"> A) interface</label><br>
+      <label><input type="radio" name="j10" value="b" style="width:auto"> B) implements</label><br>
+      <label><input type="radio" name="j10" value="c" style="width:auto"> C) abstract</label><br>
+      <label><input type="radio" name="j10" value="d" style="width:auto"> D) package</label>
+    </div>
+    <button onclick="checkQuiz('quiz-java','result-java',{j1:'a',j2:'a',j3:'b',j4:'a',j5:'b',j6:'a',j7:'b',j8:'a',j9:'b',j10:'a'})">Check Score</button>
+    <p id="result-java"></p>
+  </div>
+
+  <!-- Web Technology Quiz -->
+  <div class="module-header" onclick="toggleModule('quiz-web')" style="border-color:#ffd166">
+    🎯 Quiz 4: Web Technology ▼
+  </div>
+
+  <div id="quiz-web" class="module-content">
+    <div class="quiz-q">
+      <b>Q1. Which is a semantic HTML5 tag?</b><br>
+      <label><input type="radio" name="w1" value="a" style="width:auto"> A) &lt;section&gt;</label><br>
+      <label><input type="radio" name="w1" value="b" style="width:auto"> B) &lt;font&gt;</label><br>
+      <label><input type="radio" name="w1" value="c" style="width:auto"> C) &lt;big&gt;</label><br>
+      <label><input type="radio" name="w1" value="d" style="width:auto"> D) &lt;center&gt;</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q2. Which CSS property changes text color?</b><br>
+      <label><input type="radio" name="w2" value="a" style="width:auto"> A) color</label><br>
+      <label><input type="radio" name="w2" value="b" style="width:auto"> B) font-style</label><br>
+      <label><input type="radio" name="w2" value="c" style="width:auto"> C) background-image</label><br>
+      <label><input type="radio" name="w2" value="d" style="width:auto"> D) text-align</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q3. Which HTML tag creates a hyperlink?</b><br>
+      <label><input type="radio" name="w3" value="a" style="width:auto"> A) &lt;linkto&gt;</label><br>
+      <label><input type="radio" name="w3" value="b" style="width:auto"> B) &lt;a&gt;</label><br>
+      <label><input type="radio" name="w3" value="c" style="width:auto"> C) &lt;href&gt;</label><br>
+      <label><input type="radio" name="w3" value="d" style="width:auto"> D) &lt;url&gt;</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q4. Which HTML tag inserts an image?</b><br>
+      <label><input type="radio" name="w4" value="a" style="width:auto"> A) &lt;img&gt;</label><br>
+      <label><input type="radio" name="w4" value="b" style="width:auto"> B) &lt;image&gt;</label><br>
+      <label><input type="radio" name="w4" value="c" style="width:auto"> C) &lt;picturefile&gt;</label><br>
+      <label><input type="radio" name="w4" value="d" style="width:auto"> D) &lt;src&gt;</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q5. Which CSS property adds space inside an element's border?</b><br>
+      <label><input type="radio" name="w5" value="a" style="width:auto"> A) margin</label><br>
+      <label><input type="radio" name="w5" value="b" style="width:auto"> B) padding</label><br>
+      <label><input type="radio" name="w5" value="c" style="width:auto"> C) outline</label><br>
+      <label><input type="radio" name="w5" value="d" style="width:auto"> D) gap</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q6. Which language adds interactivity to web pages?</b><br>
+      <label><input type="radio" name="w6" value="a" style="width:auto"> A) JavaScript</label><br>
+      <label><input type="radio" name="w6" value="b" style="width:auto"> B) SQL</label><br>
+      <label><input type="radio" name="w6" value="c" style="width:auto"> C) XML</label><br>
+      <label><input type="radio" name="w6" value="d" style="width:auto"> D) Markdown</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q7. Which HTML attribute provides alternative text for an image?</b><br>
+      <label><input type="radio" name="w7" value="a" style="width:auto"> A) title</label><br>
+      <label><input type="radio" name="w7" value="b" style="width:auto"> B) alt</label><br>
+      <label><input type="radio" name="w7" value="c" style="width:auto"> C) name</label><br>
+      <label><input type="radio" name="w7" value="d" style="width:auto"> D) value</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q8. Which CSS layout system is designed for one-dimensional layouts?</b><br>
+      <label><input type="radio" name="w8" value="a" style="width:auto"> A) Flexbox</label><br>
+      <label><input type="radio" name="w8" value="b" style="width:auto"> B) Float only</label><br>
+      <label><input type="radio" name="w8" value="c" style="width:auto"> C) Position only</label><br>
+      <label><input type="radio" name="w8" value="d" style="width:auto"> D) Table markup</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q9. Which HTML tag creates an unordered list?</b><br>
+      <label><input type="radio" name="w9" value="a" style="width:auto"> A) &lt;ol&gt;</label><br>
+      <label><input type="radio" name="w9" value="b" style="width:auto"> B) &lt;ul&gt;</label><br>
+      <label><input type="radio" name="w9" value="c" style="width:auto"> C) &lt;li&gt;</label><br>
+      <label><input type="radio" name="w9" value="d" style="width:auto"> D) &lt;list&gt;</label>
+    </div>
+    <div class="quiz-q">
+      <b>Q10. Which tag links an external CSS file?</b><br>
+      <label><input type="radio" name="w10" value="a" style="width:auto"> A) &lt;link&gt;</label><br>
+      <label><input type="radio" name="w10" value="b" style="width:auto"> B) &lt;stylefile&gt;</label><br>
+      <label><input type="radio" name="w10" value="c" style="width:auto"> C) &lt;css&gt;</label><br>
+      <label><input type="radio" name="w10" value="d" style="width:auto"> D) &lt;script&gt;</label>
+    </div>
+    <button onclick="checkQuiz('quiz-web','result-web',{w1:'a',w2:'a',w3:'b',w4:'a',w5:'b',w6:'a',w7:'b',w8:'a',w9:'b',w10:'a'})">Check Score</button>
+    <p id="result-web"></p>
+  </div>
+</section>
+
+      
+         
+    </div>
+  </main>
+</div>
+
+<script>
+function toggleModule(id) {
+  const selectedModule = document.getElementById(id);
+
+  if (!selectedModule) return;
+
+  // Notes mein sirf selected subject ke notes khulein
+  if (id.startsWith('notes-')) {
+    document.querySelectorAll('#notes .module-content').forEach(module => {
+      if (module.id !== id) {
+        module.classList.remove('active');
+      }
+    });
+  }
+
+  // Selected subject ke notes open ya close honge
+  selectedModule.classList.toggle('active');
+}
+
+function checkQuiz(quizId, resultId, answers) {
+  let score = 0;
+  const total = Object.keys(answers).length;
+
+  for (const question in answers) {
+    const selected = document.querySelector(
+      '#' + quizId + ' input[name="' + question + '"]:checked'
+    );
+
+    if (selected && selected.value === answers[question]) {
+      score++;
+    }
+  }
+
+  const result = document.getElementById(resultId);
+
+  if (result) {
+    result.textContent = "Your Score: " + score + " / " + total;
+  }
+}
+
+document.querySelectorAll('.side-btn').forEach(button=>{
+  button.addEventListener('click',()=>{
+    document.querySelectorAll('.side-btn').forEach(btn=>{
+      btn.classList.remove('active');
+    });
+
+    button.classList.add('active');
+
+    const section=document.getElementById(button.dataset.target);
+
+    if(section){
+      section.scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+      });
+    }
+  });
+});
+</script>
+
+<!-- FIREBASE LOGIN / REGISTER -->
+<script type="module">
+import { auth, db } from "./firebase.js";
+
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const email=document.getElementById('email');
+const password=document.getElementById('password');
+const role=document.getElementById('role');
+const authMsg=document.getElementById('authMsg');
+const authSection=document.getElementById('authSection');
+const dashboard=document.getElementById('dashboard');
+const logoutBtn=document.getElementById('logoutBtn');
+const userInfo=document.getElementById('userInfo');
+
+document.getElementById('registerBtn').onclick=async()=>{
+  try{
+    const c=await createUserWithEmailAndPassword(
+      auth,email.value,password.value
+    );
+
+    await setDoc(doc(db,"users",c.user.uid),{
+      email:email.value,
+      role:role.value
+    });
+
+    authMsg.innerText="Registered Successfully!";
+  }catch(e){
+    authMsg.innerText=e.message;
+  }
+};
+
+document.getElementById('loginBtn').onclick=async()=>{
+  try{
+    await signInWithEmailAndPassword(auth,email.value,password.value);
+  }catch(e){
+    authMsg.innerText=e.message;
+  }
+};
+
+logoutBtn.onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,async(u)=>{
+  if(u){
+    authSection.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+    logoutBtn.classList.remove('hidden');
+    userInfo.innerText=u.email;
+  }else{
+    authSection.classList.remove('hidden');
+    dashboard.classList.add('hidden');
+    logoutBtn.classList.add('hidden');
+    userInfo.innerText='';
+  }
+});
+</script>
+
+</body>
+</html>
